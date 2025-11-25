@@ -15,7 +15,17 @@ const BuyNowPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [sortBy, setSortBy] = useState('featured');
   const [buyNowItems, setBuyNowItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+  
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     fetchBuyNowItems();
@@ -53,7 +63,7 @@ const BuyNowPage = () => {
     } catch (error) {
       console.error('Error fetching buy now items:', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
