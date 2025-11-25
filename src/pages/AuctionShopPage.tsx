@@ -4,7 +4,17 @@ import { supabase } from '@/integrations/supabase/client';
 const AuctionShopPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [shops, setShops] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+  
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     fetchShops();
@@ -41,7 +51,7 @@ const fetchShops = async () => {
   } catch (error) {
     console.error("Error fetching shops:", error);
   } finally {
-    setLoading(false);
+    // setLoading(false);
   }
 };
 
