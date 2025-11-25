@@ -47,6 +47,8 @@ const ConsignmentPage: React.FC = () => {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdminAuth();
 
+  const [loading, setLoading] = useState(false);
+
   const isAdminFlag = (() => {
     if (typeof isAdmin === 'boolean') return isAdmin;
     if (typeof isAdmin === 'number') return isAdmin > 0;
@@ -58,7 +60,7 @@ const ConsignmentPage: React.FC = () => {
   const [formData, setFormData] = useState({
     itemName: "",
     description: "",
-    terms:`<p><strong>For Questions?</strong> Please call 952-486-2318</p>
+    terms: `<p><strong>For Questions?</strong> Please call 952-486-2318</p>
 
   <p><strong>Payment Types Accepted:</strong> We accept Cash, Check, and all major CC's up to $5,000. Wire transfer required over $10,000.</p>
 
@@ -67,7 +69,7 @@ const ConsignmentPage: React.FC = () => {
   <p><strong>Shipping:</strong> Please view the shipping tab for more information, and always look to see if an item is shippable before bidding.</p>
 
   <p><strong>Disclosure:</strong> Everything is sold "as is, where is" with no guarantees or warranties. You are responsible for inspecting items prior to purchase. Photos are provided for your convenience and do not provide a guarantee or warranty. Every effort is made to provide an accurate description and condition of the item; however, it is the bidder's responsibility to verify condition, quality, count, dimensions, etc. during their own personal inspection.</p>`,
-  paymentTerms:` <p><strong>Accepted Payment Methods:</strong><br>
+    paymentTerms: ` <p><strong>Accepted Payment Methods:</strong><br>
   We accept <strong>Cash, Bank Transfer, and all major Credit/Debit Cards (Visa, MasterCard, American Express)</strong>.</p>
 
   <p><strong>Payment Deadline:</strong><br>
@@ -86,14 +88,13 @@ const ConsignmentPage: React.FC = () => {
   Applicable taxes will be added to all invoices unless a valid resale or tax-exempt certificate is provided prior to payment.</p>
 
   <p><strong>Refunds:</strong><br>
-  All sales are <strong>final</strong>. Refunds will only be issued in cases of verified billing errors.</p>
-</div>`,
+  All sales are <strong>final</strong>. Refunds will only be issued in cases of verified billing errors.</p>`,
     category: "",
     estimatedValue: "",
-    inspection_start:"",
-        inspection_end:"",
-        removal_start:"",
-        removal_end:"",
+    inspection_start: "",
+    inspection_end: "",
+    removal_start: "",
+    removal_end: "",
     condition: "",
 
     // pickup
@@ -105,7 +106,7 @@ const ConsignmentPage: React.FC = () => {
     pickupCountry: "",
     pickupLandmark: "",
 
-   state_tax_rate: "",
+    state_tax_rate: "",
     country_tax_rate: "",
     city_tax_rate: "",
     total_tax: "",
@@ -139,25 +140,26 @@ const ConsignmentPage: React.FC = () => {
     shopCountry: "",
     pickupInstructions: ""
   });
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
   }, []);
-      const calculateTotalTax = () => {
-        const total = parseFloat(formData.state_tax_rate) +
-        parseFloat(formData.country_tax_rate) +
-        parseFloat(formData.city_tax_rate) + 
-        parseFloat(formData.transport_excise_tax_rate) +
-        parseFloat(formData.misc_tax_rate);
-        console.log("Total tax calculated:", total);
-        setFormData((prev) => ({ ...prev, total_tax: total.toFixed(3) }));
-    }
+  const calculateTotalTax = () => {
+    const total = parseFloat(formData.state_tax_rate) +
+      parseFloat(formData.country_tax_rate) +
+      parseFloat(formData.city_tax_rate) +
+      parseFloat(formData.transport_excise_tax_rate) +
+      parseFloat(formData.misc_tax_rate);
+    console.log("Total tax calculated:", total);
+    setFormData((prev) => ({ ...prev, total_tax: total.toFixed(3) }));
+  }
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  
+
 
   const toggleBoolean = (field: 'idRequired' | 'proofOfPurchaseRequired') => {
     setFormData(prev => ({ ...prev, [field]: !prev[field] }));
@@ -205,138 +207,145 @@ const ConsignmentPage: React.FC = () => {
   // };
 
   // Admin flow: prepare payload but DO NOT insert into DB (per request)
-//   const handleConfirmPayment = async () => {
-//     if (!user) {
-//       alert('User must be logged in.');
-//       return;
-//     }
+  //   const handleConfirmPayment = async () => {
+  //     if (!user) {
+  //       alert('User must be logged in.');
+  //       return;
+  //     }
 
-//     if (!formData.itemName?.trim()) {
-//       alert('Please enter an Auction name.');
-//       return;
-//     }
-
-   
-//     try {
-//       // minimal validation passed
-//       const listingFee = calculateListingFee(Number(formData.quantity));
-//       const consignmentStatus = isAdminFlag ? 'approved' : 'pending';
-
-//       const insertPayload: any = {
-//         title: formData.itemName,
-//         description: formData.description || null,
-//         category: formData.category || null,
-//         condition: formData.condition || null,
-//         starting_price: null,
-//         end_time: null,
-//         shopowner_id: user.id,
-//         status: 'active',
-//         consignment_status: consignmentStatus,
-//         listing_fee: listingFee,
-//         commission_rate: 15.0,
-//         listing_fee_paid: isAdminFlag ? true : false
-//       };
-
-//       // DB insertion removed — log payload and continue
-//       console.log('Admin Site Prepared consignment payload (DB insertion removed):', insertPayload);
-// // const { data, error } = await supabase
-// //     .from('profiles')
-// //     .insert([insertPayload]) // 👈 array of objects
-
-// //   if (error) {
-// //     console.error('Insert error:', error)
-// //   } else {
-// //     console.log('Inserted successfully:', data)
-// //   }
-//       // Optionally send this payload to your server / webhook here.
-//       // Example: await fetch('/api/queue-consignment', { method: 'POST', body: JSON.stringify(insertPayload) });
-
-//       // Navigate back to account (or choose another UX: show success message, clear form, etc.)
-//       navigate('/account');
-//     } catch (err) {
-//       console.error('Error while preparing consignment payload:', err);
-//       alert('An unexpected error occurred. See console for details.');
-//     }
-
-    
-//   };
- const handleSubmission = async (e) => {
-  e.preventDefault();
-
-  if (!user) {
-    alert("User must be logged in.");
-    return;
-  }
-
-  if (!formData.itemName?.trim()) {
-    alert("Please enter an item name.");
-    return;
-  }
-
- 
-
-  // ✅ Upload multiple images
+  //     if (!formData.itemName?.trim()) {
+  //       alert('Please enter an Auction name.');
+  //       return;
+  //     }
 
 
+  //     try {
+  //       // minimal validation passed
+  //       const listingFee = calculateListingFee(Number(formData.quantity));
+  //       const consignmentStatus = isAdminFlag ? 'approved' : 'pending';
 
-  // ✅ Prepare DB payload
-  try {
+  //       const insertPayload: any = {
+  //         title: formData.itemName,
+  //         description: formData.description || null,
+  //         category: formData.category || null,
+  //         condition: formData.condition || null,
+  //         starting_price: null,
+  //         end_time: null,
+  //         shopowner_id: user.id,
+  //         status: 'active',
+  //         consignment_status: consignmentStatus,
+  //         listing_fee: listingFee,
+  //         commission_rate: 15.0,
+  //         listing_fee_paid: isAdminFlag ? true : false
+  //       };
 
-    const insertPayload: any = {
-      title: formData.itemName,
-      description: formData.description || null,
-      category: formData.category || null,
-      condition: formData.condition || null,
-      start_time: null,
-      current_price: formData.estimatedValue || null,
-      inspection_start:formData.inspection_start || null,
-        inspection_end:formData.inspection_end || null,
-        removal_start:formData.removal_start || null,
-        removal_end:formData.removal_end || null,
-      starting_price: formData.estimatedValue || null,
-      end_time: null,
-      shopowner_id: user.id,
-      state_tax_rate: formData.state_tax_rate,
-    country_tax_rate:   formData.country_tax_rate,
-    city_tax_rate:   formData.city_tax_rate,
-    total_tax:  formData.total_tax,
-    transport_excise_tax_rate: formData.transport_excise_tax_rate,
-    misc_tax_rate:    formData.misc_tax_rate,
-      status: "draft",
-      terms:formData.terms,
-      shipping_contact_phone:formData.shipping_contact_phone,
-      shipping_contact_name:formData.shipping_contact_name,
-      shop_address_line1:formData.shopAddressLine1,
-      shop_address_line2:formData.shopAddressLine2,
-      shop_city:formData.shopCity,
-      shop_country:formData.shopCountry,
-      shop_state:formData.pickupState,
-      shop_zip:formData.pickupZip,
-      payment_terms:formData.paymentTerms,
-      listing_fee: 0.0,
-      commission_rate: 15.0,
-      listing_fee_paid: isAdminFlag ? true : false,
-    };
-    console.log("Prepared consignment payload:", insertPayload);
+  //       // DB insertion removed — log payload and continue
+  //       console.log('Admin Site Prepared consignment payload (DB insertion removed):', insertPayload);
+  // // const { data, error } = await supabase
+  // //     .from('profiles')
+  // //     .insert([insertPayload]) // 👈 array of objects
 
-    const { data, error } = await supabase
-      .from("auction_shop")
-      .insert([insertPayload]);
-    
-    if (error) {
-      console.error("Insert error:", error);
-      alert("Database insert failed!");
-    } else {
-      
-      navigate("/account");
+  // //   if (error) {
+  // //     console.error('Insert error:', error)
+  // //   } else {
+  // //     console.log('Inserted successfully:', data)
+  // //   }
+  //       // Optionally send this payload to your server / webhook here.
+  //       // Example: await fetch('/api/queue-consignment', { method: 'POST', body: JSON.stringify(insertPayload) });
+
+  //       // Navigate back to account (or choose another UX: show success message, clear form, etc.)
+  //       navigate('/account');
+  //     } catch (err) {
+  //       console.error('Error while preparing consignment payload:', err);
+  //       alert('An unexpected error occurred. See console for details.');
+  //     }
+
+
+  //   };
+  const handleSubmission = async (e) => {
+    e.preventDefault();
+     setLoading(true);
+
+    if (!user) {
+      alert("User must be logged in.");
+      return;
     }
-  } catch (err) {
-    console.error("Error while preparing consignment payload:", err);
-    alert("An unexpected error occurred. See console for details.");
-  }
-};
 
-const [inspectionByAppt, setInspectionByAppt] = useState(false);
+    if (!formData.itemName?.trim()) {
+      alert("Please enter an item name.");
+      return;
+    }
+
+
+
+    // ✅ Upload multiple images
+
+
+
+    // ✅ Prepare DB payload
+    try {
+
+      const insertPayload: any = {
+        title: formData.itemName,
+        description: formData.description || null,
+        category: formData.category || null,
+        condition: formData.condition || null,
+        start_time: null,
+        current_price: formData.estimatedValue || null,
+        inspection_start: formData.inspection_start || null,
+        inspection_end: formData.inspection_end || null,
+        removal_start: formData.removal_start || null,
+        removal_end: formData.removal_end || null,
+        starting_price: formData.estimatedValue || null,
+        end_time: null,
+        shopowner_id: user.id,
+        state_tax_rate: formData.state_tax_rate,
+        country_tax_rate: formData.country_tax_rate,
+        city_tax_rate: formData.city_tax_rate,
+        total_tax: formData.total_tax,
+        transport_excise_tax_rate: formData.transport_excise_tax_rate,
+        misc_tax_rate: formData.misc_tax_rate,
+        status: "draft",
+        terms: formData.terms,
+        shipping_contact_phone: formData.shipping_contact_phone,
+        shipping_contact_name: formData.shipping_contact_name,
+        shop_address_line1: formData.shopAddressLine1,
+        shop_address_line2: formData.shopAddressLine2,
+        shop_city: formData.shopCity,
+        shop_country: formData.shopCountry,
+        shop_state: formData.pickupState,
+        shop_zip: formData.pickupZip,
+        payment_terms: formData.paymentTerms,
+        listing_fee: 0.0,
+        commission_rate: 15.0,
+        listing_fee_paid: isAdminFlag ? true : false,
+      };
+      console.log("Prepared consignment payload:", insertPayload);
+
+
+
+      const { data, error } = await supabase
+        .from("auction_shop")
+        .insert([insertPayload]);
+
+
+      if (error) {
+        console.error("Insert error:", error);
+        alert("Database insert failed!");
+      } else {
+
+        navigate("/account");
+      }
+
+      setLoading(false);
+
+    } catch (err) {
+      console.error("Error while preparing consignment payload:", err);
+      alert("An unexpected error occurred. See console for details.");
+    }
+  };
+
+  const [inspectionByAppt, setInspectionByAppt] = useState(false);
   const [preventSameDayCancel, setPreventSameDayCancel] = useState(true);
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -387,45 +396,45 @@ const [inspectionByAppt, setInspectionByAppt] = useState(false);
                     </div>
                   </div>
 
-                     <Tabs defaultValue="details" className="w-full">
-      <TabsList className="grid grid-cols-5 w-full">
-        <TabsTrigger value="details">Shop Details</TabsTrigger>
-        <TabsTrigger value="shipping">Contact Details</TabsTrigger>
-        <TabsTrigger value="security">Terms</TabsTrigger>
-        <TabsTrigger value="payment">Payment Terms</TabsTrigger>
-                <TabsTrigger value="tax">Tax</TabsTrigger>
+                  <Tabs defaultValue="details" className="w-full">
+                    <TabsList className="grid grid-cols-5 w-full">
+                      <TabsTrigger value="details">Shop Details</TabsTrigger>
+                      <TabsTrigger value="shipping">Contact Details</TabsTrigger>
+                      <TabsTrigger value="security">Terms</TabsTrigger>
+                      <TabsTrigger value="payment">Payment Terms</TabsTrigger>
+                      <TabsTrigger value="tax">Tax</TabsTrigger>
 
-      </TabsList>
+                    </TabsList>
 
-      {/* --- TAB 1: ITEM DETAILS --- */}
-   <TabsContent value="details" className="space-y-6">
-  <div className="space-y-2">
-    <Label htmlFor="description">Auction Description</Label>
-    {/* id="description" value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={4} */}
-    <ReactQuill
-      theme="snow"
-      value={formData.description}
-      id="description"
-      onChange={(e) => handleInputChange("description", e)}
-      placeholder="Provide detailed information about your item"
-      modules={{
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "image"],
-          ["clean"],
-        ],
-      }}
-      className="bg-white rounded-md border border-gray-300"
-    />
-  </div>
+                    {/* --- TAB 1: ITEM DETAILS --- */}
+                    <TabsContent value="details" className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="description">Auction Description</Label>
+                        {/* id="description" value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={4} */}
+                        <ReactQuill
+                          theme="snow"
+                          value={formData.description}
+                          id="description"
+                          onChange={(e) => handleInputChange("description", e)}
+                          placeholder="Provide detailed information about your item"
+                          modules={{
+                            toolbar: [
+                              [{ header: [1, 2, false] }],
+                              ["bold", "italic", "underline", "strike"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                              ["link", "image"],
+                              ["clean"],
+                            ],
+                          }}
+                          className="bg-white rounded-md border border-gray-300"
+                        />
+                      </div>
 
 
-</TabsContent>
+                    </TabsContent>
 
-      {/* --- TAB 2: PICKUP --- */}
-      {/* <TabsContent value="pickup" className="space-y-6">
+                    {/* --- TAB 2: PICKUP --- */}
+                    {/* <TabsContent value="pickup" className="space-y-6">
         <div className="p-4 border rounded-lg space-y-4 bg-white">
           <h3 className="font-semibold text-lg">Pickup Location Details</h3>
 
@@ -538,106 +547,106 @@ const [inspectionByAppt, setInspectionByAppt] = useState(false);
         </div>
       </TabsContent> */}
 
-      {/* --- TAB 2: SHIPPING --- */}
-      <TabsContent value="shipping" className="space-y-6">
-        <div className="p-4 border rounded-lg space-y-4 bg-white">
-          
-          {/* Shipping Availability */}
-         
+                    {/* --- TAB 2: SHIPPING --- */}
+                    <TabsContent value="shipping" className="space-y-6">
+                      <div className="p-4 border rounded-lg space-y-4 bg-white">
 
-          {/* Shipping Methods */}
-       
+                        {/* Shipping Availability */}
 
-          {/* Shipping Costs */}
-        
 
-          {/* International Shipping */}
-          
+                        {/* Shipping Methods */}
 
-          {/* Shipping Restrictions */}
-          
 
-          {/* Shop Location */}
-          <div className="space-y-4">
-            <h4 className="font-medium">Shop Location</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label>Address Line 1</Label>
-                <Input
-                  value={formData.shopAddressLine1 || ""}
-                  onChange={(e) => handleInputChange("shopAddressLine1", e.target.value)}
-                  placeholder="Street address"
-                />
-              </div>
-              <div>
-                <Label>Address Line 2 (optional)</Label>
-                <Input
-                  value={formData.shopAddressLine2 || ""}
-                  onChange={(e) => handleInputChange("shopAddressLine2", e.target.value)}
-                  placeholder="Suite, unit, etc."
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label>City</Label>
-                <Input
-                  value={formData.shopCity || ""}
-                  onChange={(e) => handleInputChange("shopCity", e.target.value)}
-                  placeholder="City"
-                />
-              </div>
-              <div>
-                <Label>State/Province</Label>
-                <Input
-                  value={formData.pickupState || ""}
-                  onChange={(e) => handleInputChange("pickupState", e.target.value)}
-                  placeholder="State"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label>ZIP/Postal Code</Label>
-                <Input
-                  value={formData.pickupZip || ""}
-                  onChange={(e) => handleInputChange("pickupZip", e.target.value)}
-                  placeholder="ZIP code"
-                />
-              </div>
-              <div>
-                <Label>Country</Label>
-                <Input
-                  value={formData.shopCountry || ""}
-                  onChange={(e) => handleInputChange("shopCountry", e.target.value)}
-                  placeholder="Country"
-                />
-              </div>
-            </div>
-            
-          </div>
+                        {/* Shipping Costs */}
 
-          {/* Shipping Contact */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>Contact Name</Label>
-              <Input
-                value={formData.shipping_contact_name || ""}
-                onChange={(e) => handleInputChange("shipping_contact_name", e.target.value)}
-                placeholder="Contact person for shipping questions"
-              />
-            </div>
-            <div>
-              <Label>Contact Phone</Label>
-              <Input
-                value={formData.shipping_contact_phone || ""}
-                onChange={(e) => handleInputChange("shipping_contact_phone", e.target.value)}
-                placeholder="Phone number for shipping inquiries"
-              />
-            </div>
-            
-          </div>
-           {/* <div className="mt-4">
+
+                        {/* International Shipping */}
+
+
+                        {/* Shipping Restrictions */}
+
+
+                        {/* Shop Location */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium">Shop Location</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label>Address Line 1</Label>
+                              <Input
+                                value={formData.shopAddressLine1 || ""}
+                                onChange={(e) => handleInputChange("shopAddressLine1", e.target.value)}
+                                placeholder="Street address"
+                              />
+                            </div>
+                            <div>
+                              <Label>Address Line 2 (optional)</Label>
+                              <Input
+                                value={formData.shopAddressLine2 || ""}
+                                onChange={(e) => handleInputChange("shopAddressLine2", e.target.value)}
+                                placeholder="Suite, unit, etc."
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label>City</Label>
+                              <Input
+                                value={formData.shopCity || ""}
+                                onChange={(e) => handleInputChange("shopCity", e.target.value)}
+                                placeholder="City"
+                              />
+                            </div>
+                            <div>
+                              <Label>State/Province</Label>
+                              <Input
+                                value={formData.pickupState || ""}
+                                onChange={(e) => handleInputChange("pickupState", e.target.value)}
+                                placeholder="State"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label>ZIP/Postal Code</Label>
+                              <Input
+                                value={formData.pickupZip || ""}
+                                onChange={(e) => handleInputChange("pickupZip", e.target.value)}
+                                placeholder="ZIP code"
+                              />
+                            </div>
+                            <div>
+                              <Label>Country</Label>
+                              <Input
+                                value={formData.shopCountry || ""}
+                                onChange={(e) => handleInputChange("shopCountry", e.target.value)}
+                                placeholder="Country"
+                              />
+                            </div>
+                          </div>
+
+                        </div>
+
+                        {/* Shipping Contact */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label>Contact Name</Label>
+                            <Input
+                              value={formData.shipping_contact_name || ""}
+                              onChange={(e) => handleInputChange("shipping_contact_name", e.target.value)}
+                              placeholder="Contact person for shipping questions"
+                            />
+                          </div>
+                          <div>
+                            <Label>Contact Phone</Label>
+                            <Input
+                              value={formData.shipping_contact_phone || ""}
+                              onChange={(e) => handleInputChange("shipping_contact_phone", e.target.value)}
+                              placeholder="Phone number for shipping inquiries"
+                            />
+                          </div>
+
+                        </div>
+                        {/* <div className="mt-4">
         <Label>Map Preview</Label>
         <iframe
           title="Shop Location Map"
@@ -652,10 +661,10 @@ const [inspectionByAppt, setInspectionByAppt] = useState(false);
           )}&output=embed`}
         ></iframe>
       </div> */}
-        </div>
-      </TabsContent>
-             <TabsContent value="tax" className="space-y-4">
-                    {/* <div className="flex justify-between items-center">
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="tax" className="space-y-4">
+                      {/* <div className="flex justify-between items-center">
     <Label className="text-lg font-semibold">Bid Increments</Label>
     <Button
       type="button"
@@ -670,7 +679,7 @@ const [inspectionByAppt, setInspectionByAppt] = useState(false);
     </Button>
   </div> */}
 
-  {/* <div className="overflow-x-auto border rounded-lg">
+                      {/* <div className="overflow-x-auto border rounded-lg">
     <table className="w-full text-sm">
       <thead className="bg-muted text-muted-foreground">
         <tr>
@@ -727,165 +736,165 @@ const [inspectionByAppt, setInspectionByAppt] = useState(false);
       </tbody>
     </table>
   </div> */}
-                  <div>
-                    <Label>State Tax Rate</Label>
-                    <Input
-                      type="number"
-  step="0.01"
-  value={formData.state_tax_rate}
-  onChange={(e) => {
-    handleInputChange("state_tax_rate", e.target.value);
-    calculateTotalTax();
-  }}
-  placeholder="e.g. 6.875"
-/>
+                      <div>
+                        <Label>State Tax Rate</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={formData.state_tax_rate}
+                          onChange={(e) => {
+                            handleInputChange("state_tax_rate", e.target.value);
+                            calculateTotalTax();
+                          }}
+                          placeholder="e.g. 6.875"
+                        />
 
-                  </div>
-                  <div>
-                    <Label>Country Tax Rate</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.country_tax_rate}
-                      onChange={(e) => {handleInputChange("country_tax_rate", e.target.value);calculateTotalTax();}}
-                      placeholder="e.g. 0.15"
-                    />
-                  </div>
-                  <div>
-                    <Label>City Tax Rate</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.city_tax_rate}
-                      onChange={(e) =>{ handleInputChange("city_tax_rate", e.target.value);calculateTotalTax()}}
-                      placeholder="e.g. 1.25"
-                    />
-                  </div>
-                  <div>
-                    <Label>Transport / Excise Tax Rate</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.transport_excise_tax_rate}
-                      onChange={(e) => {handleInputChange("transport_excise_tax_rate", e.target.value);calculateTotalTax();}}
-                      placeholder="e.g. 1.25"
-                    />
-                  </div>
-                  <div>
-                    <Label>Miscellaneous Tax Rate</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.misc_tax_rate}
-                      onChange={(e) =>{ 
-                        handleInputChange("misc_tax_rate", e.target.value);
-                        calculateTotalTax();
-                    }}
-                      placeholder="e.g. 0.25"
-                    />
-                  </div>
-                   <div>
-                    <Label>Total Tax</Label>
-                    <Input
-                      type="number"
-                      value={formData.total_tax}
-                      onChange={(e) => handleInputChange("total_tax", e.target.value)}
-                      disabled
-                      placeholder="e.g. 0.25"
-                    />
-                  </div>
-                </TabsContent>
-      {/* --- TAB 4: SECURITY --- */}
-      <TabsContent value="security" className="space-y-6">
-         <div className="space-y-2">
-    <Label htmlFor="terms">Terms</Label>
-    {/* id="description" value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={4} */}
-    <ReactQuill
-      theme="snow"
-      value={formData.terms}
-      id="terms"
-      onChange={(e) => handleInputChange("terms", e)}
-      placeholder="Terms and Condition of your Auction"
-      modules={{
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "image"],
-          ["clean"],
-        ],
-      }}
-      className="bg-white rounded-md border border-gray-300"
-    />
-  </div>
-      </TabsContent>
- <TabsContent value="payment" className="space-y-6">
-  <div className="space-y-2">
-    <Label htmlFor="paymentTerms">Payment Terms</Label>
-    {/* id="description" value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={4} */}
-    <ReactQuill
-      theme="snow"
-      value={formData.paymentTerms}
-      id="paymentTerms"
-      onChange={(e) => handleInputChange("paymentTerms", e)}
-      placeholder="Payment Terms and Condition"
-      modules={{
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "image"],
-          ["clean"],
-        ],
-      }}
-      className="bg-white rounded-md border border-gray-300"
-    />
-  </div>
+                      </div>
+                      <div>
+                        <Label>Country Tax Rate</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={formData.country_tax_rate}
+                          onChange={(e) => { handleInputChange("country_tax_rate", e.target.value); calculateTotalTax(); }}
+                          placeholder="e.g. 0.15"
+                        />
+                      </div>
+                      <div>
+                        <Label>City Tax Rate</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={formData.city_tax_rate}
+                          onChange={(e) => { handleInputChange("city_tax_rate", e.target.value); calculateTotalTax() }}
+                          placeholder="e.g. 1.25"
+                        />
+                      </div>
+                      <div>
+                        <Label>Transport / Excise Tax Rate</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={formData.transport_excise_tax_rate}
+                          onChange={(e) => { handleInputChange("transport_excise_tax_rate", e.target.value); calculateTotalTax(); }}
+                          placeholder="e.g. 1.25"
+                        />
+                      </div>
+                      <div>
+                        <Label>Miscellaneous Tax Rate</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={formData.misc_tax_rate}
+                          onChange={(e) => {
+                            handleInputChange("misc_tax_rate", e.target.value);
+                            calculateTotalTax();
+                          }}
+                          placeholder="e.g. 0.25"
+                        />
+                      </div>
+                      <div>
+                        <Label>Total Tax</Label>
+                        <Input
+                          type="number"
+                          value={formData.total_tax}
+                          onChange={(e) => handleInputChange("total_tax", e.target.value)}
+                          disabled
+                          placeholder="e.g. 0.25"
+                        />
+                      </div>
+                    </TabsContent>
+                    {/* --- TAB 4: SECURITY --- */}
+                    <TabsContent value="security" className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="terms">Terms</Label>
+                        {/* id="description" value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={4} */}
+                        <ReactQuill
+                          theme="snow"
+                          value={formData.terms}
+                          id="terms"
+                          onChange={(e) => handleInputChange("terms", e)}
+                          placeholder="Terms and Condition of your Auction"
+                          modules={{
+                            toolbar: [
+                              [{ header: [1, 2, false] }],
+                              ["bold", "italic", "underline", "strike"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                              ["link", "image"],
+                              ["clean"],
+                            ],
+                          }}
+                          className="bg-white rounded-md border border-gray-300"
+                        />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="payment" className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="paymentTerms">Payment Terms</Label>
+                        {/* id="description" value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={4} */}
+                        <ReactQuill
+                          theme="snow"
+                          value={formData.paymentTerms}
+                          id="paymentTerms"
+                          onChange={(e) => handleInputChange("paymentTerms", e)}
+                          placeholder="Payment Terms and Condition"
+                          modules={{
+                            toolbar: [
+                              [{ header: [1, 2, false] }],
+                              ["bold", "italic", "underline", "strike"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                              ["link", "image"],
+                              ["clean"],
+                            ],
+                          }}
+                          className="bg-white rounded-md border border-gray-300"
+                        />
+                      </div>
 
 
-</TabsContent>
-      {/* --- TAB 5: SUMMARY / PAYMENT --- */}
-    </Tabs>
-     <div className="p-2 space-y-6 ">
-      {/* Auction Schedule */}
-      <Accordion type="single" collapsible defaultValue="auction">
-        
+                    </TabsContent>
+                    {/* --- TAB 5: SUMMARY / PAYMENT --- */}
+                  </Tabs>
+                  <div className="p-2 space-y-6 ">
+                    {/* Auction Schedule */}
+                    <Accordion type="single" collapsible defaultValue="auction">
 
-        {/* Inspection Schedule */}
-        <AccordionItem value="inspection">
-          <AccordionTrigger>Inspection Schedule</AccordionTrigger>
-          <AccordionContent className="space-y-4">
-            <div>
-              <Label>Start</Label>
-              <Input value={formData.inspection_start}
-                  onChange={(e) => handleInputChange("inspection_start", e.target.value)} type="datetime-local" />
-            </div>
-            <div>
-              <Label>End</Label>
-              <Input value={formData.inspection_end}
-                  onChange={(e) => handleInputChange("inspection_end", e.target.value)} type="datetime-local" />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
 
-        {/* Removal Schedule */}
-        <AccordionItem value="removal">
-          <AccordionTrigger>Removal Schedule</AccordionTrigger>
-          <AccordionContent className="space-y-4">
-            <div>
-              <Label>Start</Label>
-              <Input value={formData.removal_start}
-                  onChange={(e) => handleInputChange("removal_start", e.target.value)} type="datetime-local" />
-            </div>
-            <div>
-              <Label>End</Label>
-              <Input value={formData.removal_end}
-                  onChange={(e) => handleInputChange("removal_end", e.target.value)} type="datetime-local" />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
+                      {/* Inspection Schedule */}
+                      <AccordionItem value="inspection">
+                        <AccordionTrigger>Inspection Schedule</AccordionTrigger>
+                        <AccordionContent className="space-y-4">
+                          <div>
+                            <Label>Start</Label>
+                            <Input value={formData.inspection_start}
+                              onChange={(e) => handleInputChange("inspection_start", e.target.value)} type="datetime-local" />
+                          </div>
+                          <div>
+                            <Label>End</Label>
+                            <Input value={formData.inspection_end}
+                              onChange={(e) => handleInputChange("inspection_end", e.target.value)} type="datetime-local" />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      {/* Removal Schedule */}
+                      <AccordionItem value="removal">
+                        <AccordionTrigger>Removal Schedule</AccordionTrigger>
+                        <AccordionContent className="space-y-4">
+                          <div>
+                            <Label>Start</Label>
+                            <Input value={formData.removal_start}
+                              onChange={(e) => handleInputChange("removal_start", e.target.value)} type="datetime-local" />
+                          </div>
+                          <div>
+                            <Label>End</Label>
+                            <Input value={formData.removal_end}
+                              onChange={(e) => handleInputChange("removal_end", e.target.value)} type="datetime-local" />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
 
                   {/* Listing fee card (for non-admins) */}
                   {/* {adminLoading ? null : !isAdminFlag && (
@@ -920,7 +929,7 @@ const [inspectionByAppt, setInspectionByAppt] = useState(false);
                   </div>
 
                   <div className="flex gap-4">
-                    <Button type="submit" variant="outline" className="flex-1">Save as Draft</Button>
+                    <Button type="submit" variant="outline" className="flex-1" disabled={loading}>{loading ? 'Processing...' : 'Save as Draft'}</Button>
 
                     {/* {adminLoading ? (
                       <Button type="button" className="flex-1" disabled>Checking permissions...</Button>
