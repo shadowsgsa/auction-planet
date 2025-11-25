@@ -63,45 +63,64 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [pendingItems, setPendingItems] = useState<AuctionItem[]>([]);
   const [approvedItems, setApprovedItems] = useState<AuctionItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    // Check if user is authenticated and is admin
-    if (!adminLoading && (!user || !isAdmin)) {
-      navigate('/admin/login');
-      return;
-    }
 
-    if (user && isAdmin) {
-      loadDashboardData();
-    }
-  }, [user, isAdmin, adminLoading, navigate]);
+useEffect(() => {
+  if (adminLoading) return; 
+
+  if (!user || !isAdmin) {
+    navigate('/admin/login', { replace: true });
+    return;
+  }
+
+  loadDashboardData();
+}, [user, isAdmin, adminLoading, navigate]);
+
+useEffect(() => {
+  setLoading(true);
+
+  const timer = setTimeout(() => {
+    setLoading(false);
+  }, 5000);
+
+  return () => clearTimeout(timer);
+}, []);
+
 
   const loadDashboardData = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       console.log('Starting to load dashboard data...');
       
       // Load basic stats with simple queries
       console.log('Loading basic stats...');
       
       // Count total auction items as a basic stat
-      const { count: totalItems } = await supabase
-        .from('auction_items')
-        .select('*', { count: 'exact', head: true });
+      // const { count: totalItems } = await supabase
+      //   .from('auction_items')
+      //   .select('*', { count: 'exact', head: true });
 
       // Count pending items
-      const { count: pendingCount } = await supabase
-        .from('auction_items')
-        .select('*', { count: 'exact', head: true })
-        .eq('consignment_status', 'pending');
+      // const { count: pendingCount } = await supabase
+      //   .from('auction_items')
+      //   .select('*', { count: 'exact', head: true })
+      //   .eq('consignment_status', 'pending');
 
       // Count approved items
-      const { count: approvedCount } = await supabase
-        .from('auction_items')
-        .select('*', { count: 'exact', head: true })
-        .eq('consignment_status', 'approved');
+      // const { count: approvedCount } = await supabase
+      //   .from('auction_items')
+      //   .select('*', { count: 'exact', head: true })
+      //   .eq('consignment_status', 'approved');
+
+   
+      const [{ count: pendingCount }, { count: approvedCount }] =
+      await Promise.all([
+        supabase.from("auction_items").select("*", { count: "exact", head: true }),
+        supabase.from("auction_items").select("*", { count: "exact", head: true }).eq("consignment_status", "pending"),
+        supabase.from("auction_items").select("*", { count: "exact", head: true }).eq("consignment_status", "approved")
+      ]);
 
       // Set basic stats
       setStats({
@@ -155,9 +174,13 @@ const AdminDashboard = () => {
       console.error('Dashboard data loading error:', error);
       setError('Failed to load dashboard data: ' + error.message);
     } finally {
-      setLoading(false);
+        console.log("Dashboard load complete → hiding loader");
+      // setLoading(false);
     }
   };
+
+  
+
 
   const handleApproveItem = async (itemId: string) => {
     try {
@@ -225,7 +248,7 @@ const AdminDashboard = () => {
     navigate('/admin/login');
   };
 
-  if (adminLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading admin dashboard...</div>
