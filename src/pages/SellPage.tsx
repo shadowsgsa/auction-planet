@@ -657,7 +657,7 @@ const SellPage = () => {
           )}
 
           <div className="flex gap-4">
-            <Button type="button" variant="outline" className="flex-1">Save as Draft</Button>
+            {/* <Button type="button" variant="outline" className="flex-1">Save as Draft</Button> */}
 
             {adminLoading ? (
               <Button type="button" className="flex-1" disabled>Checking permissions...</Button>
