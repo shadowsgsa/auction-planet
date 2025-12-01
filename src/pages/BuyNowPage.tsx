@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Grid, List } from 'lucide-react';
 import AuctionCard from '@/components/AuctionCard';
 
-import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 const BuyNowPage = () => {
@@ -16,8 +15,11 @@ const BuyNowPage = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [buyNowItems, setBuyNowItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const categories = ['All Categories', 'Electronics', 'Fashion', 'Furniture', 'Music', 'Art', 'Watches', 'Jewelry', 'Collectibles', 'Antiques'];
 
-  const fetchBuyNowItems = async () => {
+
+ // Fetch Buy Now Items
+const fetchBuyNowItems = async () => {
   try {
     setLoading(true);
 
@@ -44,51 +46,13 @@ const BuyNowPage = () => {
   } catch (error) {
     console.error('Error fetching buy now items:', error);
   } finally {
-    setLoading(false); // 🔥 only stop loading after fetch finishes
+    setLoading(false);
   }
 };
-
-  useEffect(() => {
-    fetchBuyNowItems();
-  }, []);
-
-  const fetchBuyNowItems = async () => {
-    try {
-      console.log('Fetching buy now items...');
-      const { data, error } = await supabase
-        .from('auction_items')
-        .select('*')
-        .eq('consignment_status', 'approved')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Supabase error fetching items:', error);
-        throw error;
-      }
-
-      console.log('Raw data from Supabase:', data);
-
-      const formattedItems = data?.map(item => ({
-        id: item.id,
-        title: item.title,
-        image: item.image_url,
-        currentBid: item.current_price,
-        timeLeft: 'Buy Now',
-        buyNowPrice: item.current_price,
-        category: item.category
-      })) || [];
-
-      console.log('Formatted items:', formattedItems);
-      setBuyNowItems(formattedItems);
-    } catch (error) {
-      console.error('Error fetching buy now items:', error);
-    } finally {
-      // setLoading(false);
-    }
-  };
-
-const categories = ['All Categories', 'Electronics', 'Fashion', 'Furniture', 'Music', 'Art', 'Watches', 'Jewelry', 'Collectibles', 'Antiques'];
+  
+useEffect(() => {
+  fetchBuyNowItems();
+}, []);
 
 
   // Filter and sort buy now items
@@ -103,9 +67,9 @@ const categories = ['All Categories', 'Electronics', 'Fashion', 'Furniture', 'Mu
         case 'featured':
           return 0; // Keep original order
         case 'price-low':
-          return a.currentBid - b.currentBid;
+          return Number(a.currentBid) - Number(b.currentBid);
         case 'price-high':
-          return b.currentBid - a.currentBid;
+          return Number(b.currentBid) - Number(a.currentBid);
         case 'newest':
           return parseInt(b.id) - parseInt(a.id);
         case 'name-asc':
