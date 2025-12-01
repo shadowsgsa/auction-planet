@@ -566,35 +566,36 @@ const SellPage = () => {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Sale Type & Pricing</CardTitle>
-              <CardDescription>Choose how you want to sell your item</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-  <div className="space-y-3">
-    <Label>Sale Type</Label>
-    {/* Buy Now is always selected */}
-    <div className="flex items-center space-x-4 p-3 border rounded-lg">
-      <RadioGroupItem value="buy-now" id="buy-now" checked readOnly />
-      <Label htmlFor="buy-now" className="flex-1 cursor-pointer flex items-center justify-between">
-        <div className="font-medium">Buy Now</div>
-        <div className="flex-1 ml-4">
-          <Input
-            id="buyNowPrice"
-            type="number"
-            placeholder="99.99"
-            value={formData.buyNowPrice}
-            onChange={(e) => setFormData({ ...formData, buyNowPrice: e.target.value })}
-            required
-          />
+  <CardHeader>
+    <CardTitle>Sale Type & Pricing</CardTitle>
+    <CardDescription>Choose how you want to sell your item</CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-6">
+    <div className="space-y-3">
+      <Label>Sale Type</Label>
+      {/* Buy Now is always selected */}
+      <RadioGroup value="buy-now" onValueChange={() => {}}>
+        <div className="flex items-center space-x-4 p-3 border rounded-lg">
+          <RadioGroupItem value="buy-now" id="buy-now" />
+          <Label htmlFor="buy-now" className="flex-1 cursor-pointer flex items-center justify-between">
+            <div className="font-medium">Buy Now</div>
+            <div className="flex-1 ml-4">
+              <Input
+                id="buyNowPrice"
+                type="number"
+                placeholder="99.99"
+                value={formData.buyNowPrice || ""}
+                onChange={(e) => setFormData({ ...formData, buyNowPrice: e.target.value })}
+                required
+              />
+            </div>
+          </Label>
         </div>
-      </Label>
+      </RadioGroup>
     </div>
-  </div>
-</CardContent>
+  </CardContent>
+</Card>
 
-
-          </Card>
 
           {adminLoading ? null : !isAdminFlag && (
             <Card className="border-warning bg-warning/5">
