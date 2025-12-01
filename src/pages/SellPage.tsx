@@ -573,75 +573,26 @@ const SellPage = () => {
             <CardContent className="space-y-6">
   <div className="space-y-3">
     <Label>Sale Type</Label>
-    <RadioGroup value={formData.saleType} onValueChange={(value) => setFormData({ ...formData, saleType: value })}>
-      {/* 
-      <div className="flex items-center space-x-2 p-3 border rounded-lg">
-        <RadioGroupItem value="auction" id="auction" />
-        <Label htmlFor="auction" className="flex-1 cursor-pointer">
-          <div className="font-medium">Auction</div>
-          <div className="text-sm text-muted-foreground">Let buyers bid on your item</div>
-        </Label>
-      </div>
-      */}
-
-      <div className="flex items-center space-x-2 p-3 border rounded-lg">
-        <RadioGroupItem value="buy-now" id="buy-now" />
-        <Label htmlFor="buy-now" className="flex-1 cursor-pointer">
-          <div className="font-medium">Buy Now</div>
-          <div className="text-sm text-muted-foreground">Set a fixed price for immediate purchase</div>
-        </Label>
-      </div>
-
-      {/*
-      <div className="flex items-center space-x-2 p-3 border rounded-lg">
-        <RadioGroupItem value="both" id="both" />
-        <Label htmlFor="both" className="flex-1 cursor-pointer">
-          <div className="font-medium">Auction with Buy Now</div>
-          <div className="text-sm text-muted-foreground">Auction with option to buy immediately</div>
-        </Label>
-      </div>
-      */}
-    </RadioGroup>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {/*
-    {(formData.saleType === 'auction' || formData.saleType === 'both') && (
-      <div className="space-y-2">
-        <Label htmlFor="startingBid">Starting Bid ($)</Label>
-        <Input id="startingBid" type="number" placeholder="0.99" value={formData.startingBid} onChange={(e) => setFormData({ ...formData, startingBid: e.target.value })} required={formData.saleType === 'auction' || formData.saleType === 'both'} />
-      </div>
-    )}
-    */}
-
-    {(formData.saleType === 'buy-now') && (
-      <div className="space-y-2">
-        <Label htmlFor="buyNowPrice">Buy Now Price ($)</Label>
-        <Input id="buyNowPrice" type="number" placeholder="99.99" value={formData.buyNowPrice} onChange={(e) => setFormData({ ...formData, buyNowPrice: e.target.value })} required />
-      </div>
-    )}
-  </div>
-
-  {/*
-  {(formData.saleType === 'auction' || formData.saleType === 'both') && (
-    <div className="space-y-2">
-      <Label htmlFor="duration">Auction Duration</Label>
-      <Select value={formData.duration} onValueChange={(value) => setFormData({ ...formData, duration: value })}>
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="1">1 day</SelectItem>
-          <SelectItem value="3">3 days</SelectItem>
-          <SelectItem value="5">5 days</SelectItem>
-          <SelectItem value="7">7 days</SelectItem>
-          <SelectItem value="10">10 days</SelectItem>
-        </SelectContent>
-      </Select>
+    {/* Buy Now is always selected */}
+    <div className="flex items-center space-x-4 p-3 border rounded-lg">
+      <RadioGroupItem value="buy-now" id="buy-now" checked readOnly />
+      <Label htmlFor="buy-now" className="flex-1 cursor-pointer flex items-center justify-between">
+        <div className="font-medium">Buy Now</div>
+        <div className="flex-1 ml-4">
+          <Input
+            id="buyNowPrice"
+            type="number"
+            placeholder="99.99"
+            value={formData.buyNowPrice}
+            onChange={(e) => setFormData({ ...formData, buyNowPrice: e.target.value })}
+            required
+          />
+        </div>
+      </Label>
     </div>
-  )}
-  */}
+  </div>
 </CardContent>
+
 
           </Card>
 
