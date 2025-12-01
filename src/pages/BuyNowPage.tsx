@@ -17,15 +17,36 @@ const BuyNowPage = () => {
   const [buyNowItems, setBuyNowItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchBuyNowItems = async () => {
+  try {
     setLoading(true);
-  
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  
-    return () => clearTimeout(timer);
-  }, []);
+
+    const { data, error } = await supabase
+      .from('auction_items')
+      .select('*')
+      .eq('consignment_status', 'approved')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedItems = data?.map(item => ({
+      id: item.id,
+      title: item.title,
+      image: item.image_url,
+      currentBid: item.current_price,
+      timeLeft: 'Buy Now',
+      buyNowPrice: item.current_price,
+      category: item.category
+    })) || [];
+
+    setBuyNowItems(formattedItems);
+  } catch (error) {
+    console.error('Error fetching buy now items:', error);
+  } finally {
+    setLoading(false); // 🔥 only stop loading after fetch finishes
+  }
+};
 
   useEffect(() => {
     fetchBuyNowItems();
