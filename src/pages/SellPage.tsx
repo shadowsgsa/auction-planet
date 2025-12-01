@@ -341,10 +341,6 @@ const SellPage = () => {
       alert('Quantity must be at least 1.');
       return;
     }
-    if ((formData.saleType === 'auction' || formData.saleType === 'both') && !formData.startingBid) {
-      alert('Please enter a starting bid for auction listings.');
-      return;
-    }
     if ((formData.saleType === 'buy-now' || formData.saleType === 'both') && !formData.buyNowPrice) {
       alert('Please enter a buy now price.');
       return;
