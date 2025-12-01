@@ -132,34 +132,31 @@ const AuctionCard = ({
       </CardContent>
       
       <CardFooter className="p-4 pt-0 flex gap-2" onClick={(e) => e.stopPropagation()}>
-        {isAuctionItem && (
-          <BidDialog itemTitle={title} currentBid={currentBid} auctionItemId={Number(id)}>
-            <Button variant="auction" className="flex-1">
-              <Gavel className="h-4 w-4 mr-2" />
-              Place Bid
-            </Button>
-          </BidDialog>
-        )}
-        
-        {isBuyNowItem && (
-          <>
-            <Button variant="buy" className="flex-1" onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}>
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Add to Cart
-            </Button>
-            <Button variant="default" className="flex-1" onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}>
-              Buy Now
-            </Button>
-          </>
-        )}
-        
-        {buyNowPrice && isAuctionItem && (
-          <Button variant="buy" className="flex-1" onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}>
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Buy Now
-          </Button>
-        )}
-      </CardFooter> 
+  {isAuctionItem && (
+    <BidDialog itemTitle={title} currentBid={currentBid} auctionItemId={Number(id)}>
+      <Button variant="auction" className="flex-1">
+        <Gavel className="h-4 w-4 mr-2" />
+        Place Bid
+      </Button>
+    </BidDialog>
+  )}
+
+  {/* Add to Cart button (only button for Buy Now OR Auction) */}
+  {buyNowPrice && (
+    <Button
+      variant="buy"
+      className="flex-1"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleAddToCart();
+      }}
+    >
+      <ShoppingCart className="h-4 w-4 mr-2" />
+      Add to Cart
+    </Button>
+  )}
+</CardFooter>
+
     </Card>
   );
 };
