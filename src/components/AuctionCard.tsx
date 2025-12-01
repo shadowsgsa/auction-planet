@@ -83,7 +83,7 @@ const AuctionCard = ({
 
   return (
     <Card className="group hover:shadow-card transition-all duration-300 overflow-hidden cursor-pointer" onClick={handleCardClick}>
-      {/* <div className="relative">
+       <div className="relative">
         <img 
           src={getFirstImage(image)} 
           alt={title}
@@ -159,7 +159,7 @@ const AuctionCard = ({
             Buy Now
           </Button>
         )}
-      </CardFooter> */}
+      </CardFooter> 
     </Card>
   );
 };
