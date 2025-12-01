@@ -571,7 +571,7 @@ const SellPage = () => {
               <CardDescription>Choose how you want to sell your item</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-3">
+              {/*<div className="space-y-3">
                 <Label>Sale Type</Label>
                 <RadioGroup value={formData.saleType} onValueChange={(value) => setFormData({ ...formData, saleType: value })}>
                   <div className="flex items-center space-x-2 p-3 border rounded-lg">
@@ -580,7 +580,7 @@ const SellPage = () => {
                       <div className="font-medium">Auction</div>
                       <div className="text-sm text-muted-foreground">Let buyers bid on your item</div>
                     </Label>
-                  </div>
+                  </div>*/}
 
                   <div className="flex items-center space-x-2 p-3 border rounded-lg">
                     <RadioGroupItem value="buy-now" id="buy-now" />
